@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Image Carousel | CSS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Loading Screen */
+        .loading {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        
+        .heading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            text-transform: uppercase;
+        }
+        
+        .heading h2 {
+            font-weight: lighter;
+        }
+        
+        .container-3d {
+            position: absolute;
+            width: 100vw;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .video::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(#0009 0%, #0000008a 100%);
+        }
+        
+        .video {
+            overflow: hidden;
+            position: relative;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            vertical-align: middle;
+            position: absolute;
+        }
+        
+        .video {
+            transform: rotate(8deg) scale(0);
+            height: 15vw;
+            width: 10vw;
+        }
+        
+        .video video {
+            transform: scale(1.5);
+        }
+        
+        .after-loading {
+            position: absolute;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #ff2a6d;
+        }
+        
+        .logo i {
+            color: #00d9ff;
+        }
+        
+        .live-badge {
+            background: #ff2a6d;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .tab {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+        }
+        
+        .tab.active {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .tab:first-child {
+            color: #ff2a6d;
+        }
+        
+        /* Main Content */
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            flex-grow: 1;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .creator {
+            color: #00d9ff;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .video-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff2a6d, #00d9ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .youtube-link {
+            color: #ff2a6d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .youtube-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* 3D Carousel Container */
+        .carousel-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0 40px;
+        }
+        
+        .container {
+            width: 200px;
+            height: 350px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            animation: gallery 20s linear infinite;
+            cursor: pointer;
+        }
+        
+        .container:hover {
+            animation-play-state: paused;
+        }
+        
+        .container span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-origin: center;
+            transform-style: preserve-3d;
+            transform: rotateY(calc(var(--i) * 45deg)) translateZ(350px);
+        }
+        
+        .container span img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+            transition: transform 0.3s;
+        }
+        
+        .container span img:hover {
+            transform: scale(1.05);
+        }
+        
+        @keyframes gallery {
+            0% {
+                transform: perspective(1000px) rotateY(0deg);
+            }
+            100% {
+                transform: perspective(1000px) rotateY(360deg);
+            }
+        }
+        
+        /* Footer Navigation */
+        .footer-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 0;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .nav-item.active {
+            color: #ff2a6d;
+        }
+        
+        .nav-badge {
+            background: #ff2a6d;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+        
+        .nav-icon {
+            position: relative;
+        }
+        
+        /* Responsive for phone screens */
+        @media (max-width: 768px) {
+            /* Adjust carousel size for phones */
+            .container {
+                width: 150px;
+                height: 250px;
+            }
+            
+            .container span {
+                transform: rotateY(calc(var(--i) * 45deg)) translateZ(220px);
+            }
+            
+            /* Adjust video size for phones */
+            .video {
+                height: 25vw;
+                width: 18vw;
+            }
+            
+            /* Adjust header for phones */
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .logo {
+                font-size: 1rem;
+            }
+            
+            .live-badge {
+                padding: 2px 6px;
+                font-size: 0.7rem;
+            }
+            
+            /* Adjust title section for phones */
+            .creator {
+                font-size: 1.2rem;
+            }
+            
+            .video-title {
+                font-size: 1.4rem;
+            }
+            
+            /* Adjust footer for phones */
+            .footer-nav {
+                padding: 12px 0;
+            }
+            
+            .nav-item {
+                font-size: 0.7rem;
+            }
+            
+            .nav-item i {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* Further adjustments for small phones */
+            .container {
+                width: 120px;
+                height: 200px;
+            }
+            
+            .container span {
+                transform: rotateY(calc(var(--i) * 45deg)) translateZ(180px);
+            }
+            
+            .video {
+                height: 30vw;
+                width: 22vw;
+            }
+            
+            .header {
+                padding: 10px 12px;
+            }
+            
+            .tabs {
+                gap: 10px;
+            }
+            
+            .tab {
+                font-size: 0.8rem;
+            }
+            
+            .creator {
+                font-size: 1rem;
+            }
+            
+            .video-title {
+                font-size: 1.2rem;
+            }
+            
+            .subtitle {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading">
+        <div class="heading">
+            <h2>3D</h2>
+            <h2>Carousel</h2>
+        </div>
+    </div>
+
+    <div class="container-3d">
+        <div class="video">
+            <video preload="auto" autoplay="" muted="" loop="" playsinline="" disablepictureinpicture="" disableremoteplayback="">
+                <source src="https://de-puydt.b-cdn.net/de-puydt-moodfilm-compressed.mp4" type="video/mp4">
+            </video>
+        </div>
+        
+        <div class="after-loading">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-code"></i>
+                    <span>Elsu</span>
+                </div>
+                
+                <div class="tabs">
+                    <div class="tab"></div>
+                    <div class="tab active"></div>
+                    <div class="tab"></div>
+                </div>
+                
+                <div class="live-badge">LIVE</div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="content">
+                <div class="title-section">
+                    <div class="creator">Birth day Gift</div>
+                    <div class="subtitle">STEM Explore | Following For You</div>
+                    <div class="live-badge">Happy Birth Day!!</div>
+                    <h1 class="video-title">3D Image Carousel | CSS</h1>
+                    <a href="#" class="youtube-link">
+                        <i class="fab fa-youtube"></i> More 
+                    </a>
+                </div>
+                
+                <!-- 3D Carousel -->
+                <div class="carousel-wrapper">
+                    <div class="container">
+                        <span style="--i:1"><img src="assets/elsu1.png" alt="Mountain"></span>
+                        <span style="--i:2"><img src="assets/elsu2.png" alt="Northern Lights"></span>
+                        <span style="--i:3"><img src="assets/elsu3.png" alt="Music Concert"></span>
+                        <span style="--i:4"><img src="assets/elsu4.jpg" alt="Forest"></span>
+                        <span style="--i:5"><img src="assets/elsu5.png" alt="Misty Mountains"></span>
+                        <span style="--i:6"><img src="assets/elsu7.png" alt="Forest Path"></span>
+                        <span style="--i:7"><img src="assets/elsu8.png" alt="Lake View"></span>
+                        <span style="--i:8"><img src="assets/elsu9.png" alt="Beach"></span>
+                    </div>
+                    <div class="subtitle" style="margin-top: 20px;">Image Slider CSS ...more</div>
+                </div>
+            </div>
+            
+            <!-- Footer Navigation -->
+            <div class="footer-nav">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon">
+                        <i class="fas fa-user-friends"></i>
+                        <div class="nav-badge">14</div>
+                    </div>
+                    <span>Friends</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-inbox"></i>
+                    <span>Inbox</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js" integrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        // Loading animation
+        document.addEventListener("DOMContentLoaded", () => {
+            const loadHeading = document.querySelector(".heading");
+            const videoContainer = document.querySelector(".video");
+            const video = document.querySelector(".video video");
+            const afterLoading = document.querySelector(".after-loading");
+
+            gsap.set(loadHeading, {
+                opacity: 0,
+            });
+
+            const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+            
+            tl.to(loadHeading, {
+                opacity: 1,
+                duration: 0.5,
+                delay: 1,
+            })
+            .to(loadHeading, {
+                gap: "2rem",
+                duration: 0.8,
+            }, "<1")
+            .to(videoContainer, {
+                transform: "rotate(8deg) scale(1)",
+                duration: 0.8,
+            }, "<")
+            .to(videoContainer, {
+                transform: "rotate(0deg) scale(1)",
+                height: "100%",
+                width: "100%",
+                duration: 1.5,
+            }, "<1")
+            .to(video, {
+                transform: "scale(1)",
+            }, "<1")
+            .to(afterLoading, {
+                opacity: 1,
+                duration: 0.5,
+            }, "<0.5")
+            .to(".loading", {
+                opacity: 0,
+                duration: 0.5,
+                onComplete: () => {
+                    document.querySelector(".loading").style.display = "none";
+                }
+            }, "<");
+        });
+        
+        // Pause animation on click for better viewing
+        document.querySelector('.container').addEventListener('click', function() {
+            if (this.style.animationPlayState === 'paused') {
+                this.style.animationPlayState = 'running';
+            } else {
+                this.style.animationPlayState = 'paused';
+            }
+        });
+    </script>
+</body>
+</html>
